@@ -1,0 +1,132 @@
+[workspace]
+members = ["xtask"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+description = "A Chess Engine"
+rust-version = "1.88"
+edition = "2024"
+authors = ["Shantanu Giri <gshantanu27111@gmail.com>"]
+readme = "README.md"
+publish = false
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
+unused_lifetimes = "warn"
+unused_qualifications = "warn"
+unused_import_braces = "warn"
+unused_macro_rules = "warn"
+unit_bindings = "warn"
+redundant_lifetimes = "warn"
+meta_variable_misuse = "warn"
+explicit_outlives_requirements = "warn"
+non_ascii_idents = "warn"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+private_intra_doc_links = "deny"
+invalid_html_tags = "deny"
+missing_crate_level_docs = "warn"
+unescaped_backticks = "warn"
+
+[workspace.lints.clippy]
+# --- Panics and process control
+unwrap_used = "warn"
+expect_used = "warn"
+panic = "warn"
+todo = "warn"
+unimplemented = "warn"
+dbg_macro = "warn"
+exit = "warn"
+mem_forget = "warn"
+string_slice = "warn"
+
+# --- Direct output is restricted to the xtask package; see `xtask/Cargo.toml`
+print_stdout = "warn"
+print_stderr = "warn"
+
+# --- Lint hygiene: exceptions must be explained, and must expire
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+
+# --- Layout: foo.rs + foo/, never foo/mod.rs
+mod_module_files = "warn"
+
+# --- Async-heavy code
+large_futures = "warn"
+unused_async = "warn"
+
+# --- API quality
+return_self_not_must_use = "warn"
+
+# --- Curated pedantic picks
+manual_let_else = "warn"
+semicolon_if_nothing_returned = "warn"
+implicit_clone = "warn"
+cloned_instead_of_copied = "warn"
+explicit_iter_loop = "warn"
+map_unwrap_or = "warn"
+match_wildcard_for_single_variants = "warn"
+wildcard_imports = "warn"
+enum_glob_use = "warn"
+
+[workspace.dependencies]
+# --- Error Handling
+thiserror = "2"
+anyhow = "1"
+
+# --- Serialization & Deserialization
+tinyjson = "2"
+toml_edit = { version = "0.25.15", features = ["serde"] }
+
+# --- Argument Parsing
+clap = { version = "4", default-features = false, features = [
+  "derive",
+  "error-context",
+  "help",
+  "std",
+  "usage",
+] }
+
+# --- xtask utilities
+camino = { version = "1", features = ["serde1"] }
+cargo_metadata = "0.23.1"
+semver = "1"
+xshell = "0.2.7"
+
+# == Profiles
+
+# Developmental Profile
+[profile.dev]
+opt-level = 0
+codegen-units = 256
+debug = "line-tables-only" # Avoid `target` Folder overloading
+incremental = true
+
+[profile.dev.package."*"]
+debug = false # Dependencies rarely need Debugging
+opt-level = 0 # No optimization of Dependencies
+
+[profile.dev.package.xtask]
+debug = 0 # No Debugging need for xtask
+opt-level = 1 # Basic Optimization to avoid long compile time for xtask
+
+# A fast development profile for low-end PCs
+[profile.dev-fast]
+inherits = "dev"
+debug = 0
+strip = "debuginfo"
+
+[profile.release]
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+debug = false
+strip = true
+incremental = false
+panic = "abort"
