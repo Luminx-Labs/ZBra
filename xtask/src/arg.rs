@@ -1,14 +1,15 @@
 use anyhow::Result;
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
 #[command(name = "cargo xtask", version, propagate_version = true)]
-pub struct Arg {
-    commands: Commands,
+pub struct Args {
+    #[command(subcommand)]
+    command: Command,
 }
 
-#[derive(Clone, Debug)]
-pub enum Commands {
+#[derive(Subcommand, Debug)]
+pub enum Command {
     /// Run CI Checks
     Ci,
     /// Check the Environment & Tools
@@ -31,14 +32,14 @@ pub enum Commands {
 
 pub fn run() -> Result<()> {
     match Args::parse().command {
-        Commands::Ci => todo!(),
-        Commands::Doctor => todo!(),
-        Commands::CheckWorkspace => todo!(),
-        Commands::Changelog => todo!(),
-        Commands::Hooks => todo!(),
-        Commands::Dist => todo!(),
-        Commands::Version => todo!(),
-        Commands::Build => todo!(),
-        Commands::Release => todo!(),
+        Command::Ci => todo!(),
+        Command::Doctor => todo!(),
+        Command::CheckWorkspace => todo!(),
+        Command::Changelog => todo!(),
+        Command::Hooks => todo!(),
+        Command::Dist => todo!(),
+        Command::Version => todo!(),
+        Command::Build => todo!(),
+        Command::Release => todo!(),
     }
 }
