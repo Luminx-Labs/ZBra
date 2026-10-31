@@ -1,5 +1,5 @@
 [workspace]
-members = ["xtask"]
+members = ["crates/bitboard", "crates/board","xtask"]
 resolver = "3"
 
 [workspace.package]
@@ -76,6 +76,9 @@ wildcard_imports = "warn"
 enum_glob_use = "warn"
 
 [workspace.dependencies]
+# --- Serialization
+serde = { version = "1", features = ["derive"] }
+
 # --- Error Handling
 thiserror = "2"
 anyhow = "1"

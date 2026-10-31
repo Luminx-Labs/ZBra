@@ -15,6 +15,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
+name = "bitboard"
+version = "0.1.0"
+
+[[package]]
+name = "board"
+version = "0.1.0"
+
+[[package]]
 name = "camino"
 version = "1.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -320,6 +328,7 @@ dependencies = [
  "cargo_metadata",
  "clap",
  "semver",
+ "serde",
  "thiserror",
  "tinyjson",
  "toml_edit",

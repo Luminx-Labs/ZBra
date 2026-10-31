@@ -2,3 +2,7 @@
 title = "ZBra Developmental Guide"
 authors = ["Shantanu Giri"]
 language = "en"
+
+[output.html]
+additional-css = ["theme/velox.css"]
+additional-js = ["theme/velox.js"]

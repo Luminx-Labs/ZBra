@@ -1,0 +1,84 @@
+[project]
+name = "zbra"
+
+[paths]
+python_dir = "python"
+model_dir = "models"
+data_dir = "data"
+engine_binary = "target/release/zbra"
+hooks_dir = ".githooks"
+
+[python]
+version = "3.12"
+abi = "cp312"
+implementation = "cpython"
+package_manager = "uv"
+project_dir = "python"
+virtual_environment = ".venv"
+lockfile = "uv.lock"
+pytorch = "2.7.1"
+
+[model]
+default = "models/current.nnue"
+format_version = 1
+require_checksum = true
+
+[environment]
+rust = "1.88"
+python = "3.12"
+python_abi = "cp312"
+pytorch = "2.7.1"
+cuda = "12.8"
+
+# This is an inventory for reproducibility and documentation.
+# Cargo.toml/Cargo.lock and pyproject.toml/uv.lock remain authoritative.
+[[libraries]]
+name = "torch"
+ecosystem = "python"
+version = "2.7.1"
+purpose = "neural-network training and tensor operations"
+optional = false
+python_abi = "cp312"
+
+[[libraries]]
+name = "maturin"
+ecosystem = "python-build"
+version = "1.8"
+purpose = "build Python bindings for Rust"
+optional = false
+python_abi = "cp312"
+
+[[libraries]]
+name = "serde"
+ecosystem = "rust"
+version = "1"
+purpose = "configuration and model metadata serialization"
+optional = false
+
+[[models]]
+name = "zbra-nnue-v1"
+path = "models/current.nnue"
+version = "1.0.0"
+format_version = 1
+architecture = "halfkp"
+status = "current"
+sha256 = ""
+dataset = ""
+training_commit = ""
+
+# Native helper binaries used by development and model tooling.
+[[utils]]
+name = "nnue-inspect"
+language = "rust"
+path = "tools/nnue-inspect"
+binary = "target/release/nnue-inspect"
+purpose = "inspect and validate NNUE model files"
+optional = true
+
+[[utils]]
+name = "fen-bench"
+language = "c"
+path = "tools/fen-bench/fen_bench.c"
+binary = "target/release/fen-bench"
+purpose = "benchmark position parsing"
+optional = true

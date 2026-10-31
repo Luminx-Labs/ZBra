@@ -1,0 +1,4 @@
+[alias]
+xtask = "run -p xtask --profile dev --quiet"
+x = "xtask"
+lint = "cargo clippy --workspace --all-features -- -D warnings"
