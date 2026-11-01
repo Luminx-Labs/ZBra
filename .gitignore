@@ -1,2 +1,9 @@
 target
 docs/book
+.githooks
+
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/

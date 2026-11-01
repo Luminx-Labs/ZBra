@@ -21,7 +21,13 @@ pub(super) fn run(context: &Context, install: bool) -> Result<()> {
         );
     }
 
-    crate::info!("configured Rust: {}", context.config().environment.rust);
+    for tool in &context.config().python.required_tools {
+        context
+            .python_tool(tool, &["--version"])
+            .map_err(|error| anyhow::anyhow!("Python tool `{tool}` is unavailable: {error:#}"))?;
+        crate::success!("Python tool available: {tool}");
+    }
+
     crate::info!("configured Python: {}", context.config().python.version);
     crate::info!("Python executable: {}", context.python_command());
     crate::info!(
@@ -47,53 +53,6 @@ pub(super) fn run(context: &Context, install: bool) -> Result<()> {
         "Python lockfile: {}",
         context.path(&context.config().python.lockfile).display()
     );
-
-    match &context.config().environment.cuda {
-        Some(cuda) => {
-            crate::info!("configured CUDA: {cuda}");
-        }
-        None => {
-            crate::warn!("configured CUDA: not specified");
-        }
-    }
-
-    match context.config().python.pytorch.as_deref() {
-        None => {
-            crate::warn!("configured PyTorch: not specified");
-        }
-        Some(pytorch) => {
-            crate::info!("configured PyTorch: {pytorch}");
-        }
-    }
-
-    crate::info!("tracked libraries: {}", context.config().libraries.len());
-    for library in &context.config().libraries {
-        crate::info!(
-            "library: {} {} ({}, purpose: {}, optional: {}, ABI: {})",
-            library.name,
-            library.version,
-            library.ecosystem,
-            library.purpose,
-            library.optional,
-            library.python_abi.as_deref().unwrap_or("n/a")
-        );
-    }
-
-    crate::info!("tracked models: {}", context.config().models.len());
-    for model in &context.config().models {
-        crate::info!(
-            "model: {} {} [{}; {}; format {}; sha256: {}; dataset: {}; commit: {}] -> {}",
-            model.name,
-            model.version,
-            model.status,
-            model.architecture,
-            model.format_version,
-            model.sha256.as_deref().unwrap_or("not recorded"),
-            model.dataset.as_deref().unwrap_or("not recorded"),
-            model.training_commit.as_deref().unwrap_or("not recorded"),
-            context.path(&model.path).display()
-        );
-    }
 
     crate::info!(
         "default model: {} (format {})",

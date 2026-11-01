@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zbra-nnue"
+version = "0.1.0"
+description = "NNUE training for the ZBra chess engine"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "numpy>=1.26,<3",
+    "pydantic>=2.14,<3",
+]
+
+[project.optional-dependencies]
+training = [
+    "torch==2.7.1",
+]
+dev = [
+    "pytest>=8,<9",
+    "ruff>=0.5,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["nnue"]
+
+[tool.ruff]
+line-length = 100
+src = ["nnue", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

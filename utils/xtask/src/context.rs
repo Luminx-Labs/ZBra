@@ -17,9 +17,11 @@ pub struct Context {
 
 impl Context {
     pub fn load() -> Result<Self> {
-        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .context("xtask must be located directly below the workspace root")?
+        let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let root = manifest_dir
+            .ancestors()
+            .find(|path| path.join(".xtask.toml").is_file())
+            .context("could not locate .xtask.toml above xtask")?
             .to_path_buf();
         let config = Config::load(&root.join(".xtask.toml"))?;
         Ok(Self {
@@ -161,6 +163,19 @@ impl Context {
             .into_iter()
             .next()
             .unwrap_or_else(|| "python".to_owned())
+    }
+
+    pub fn python_tool(&self, tool: &str, args: &[&str]) -> Result<()> {
+        if self.config.python.package_manager != "uv" {
+            anyhow::bail!(
+                "Python tool checks require uv; configured package manager is `{}`",
+                self.config.python.package_manager
+            );
+        }
+
+        let mut command_args = vec!["run", "--locked", "--extra", "dev", tool];
+        command_args.extend_from_slice(args);
+        self.run("uv", &command_args)
     }
 
     fn python_candidates(&self) -> Vec<String> {

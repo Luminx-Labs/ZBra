@@ -13,12 +13,6 @@ pub struct Config {
     #[serde(default)]
     pub model: ModelConfig,
     #[serde(default)]
-    pub environment: EnvironmentConfig,
-    #[serde(default)]
-    pub libraries: Vec<LibraryConfig>,
-    #[serde(default)]
-    pub models: Vec<TrackedModelConfig>,
-    #[serde(default)]
     pub utils: Vec<UtilityConfig>,
 }
 
@@ -74,7 +68,8 @@ pub struct PythonConfig {
     pub project_dir: String,
     pub virtual_environment: String,
     pub lockfile: String,
-    pub pytorch: Option<String>,
+    #[serde(default)]
+    pub required_tools: Vec<String>,
 }
 
 impl Default for PythonConfig {
@@ -87,7 +82,7 @@ impl Default for PythonConfig {
             project_dir: "python".to_owned(),
             virtual_environment: ".venv".to_owned(),
             lockfile: "uv.lock".to_owned(),
-            pytorch: None,
+            required_tools: Vec::new(),
         }
     }
 }
@@ -107,44 +102,6 @@ impl Default for ModelConfig {
             require_checksum: true,
         }
     }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct EnvironmentConfig {
-    pub rust: String,
-    pub cuda: Option<String>,
-}
-
-impl Default for EnvironmentConfig {
-    fn default() -> Self {
-        Self {
-            rust: "1.88".to_owned(),
-            cuda: None,
-        }
-    }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct LibraryConfig {
-    pub name: String,
-    pub ecosystem: String,
-    pub version: String,
-    pub purpose: String,
-    pub optional: bool,
-    pub python_abi: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct TrackedModelConfig {
-    pub name: String,
-    pub path: String,
-    pub version: String,
-    pub format_version: u32,
-    pub architecture: String,
-    pub status: String,
-    pub sha256: Option<String>,
-    pub dataset: Option<String>,
-    pub training_commit: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]

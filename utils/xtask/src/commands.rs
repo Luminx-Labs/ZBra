@@ -1,6 +1,7 @@
 mod abi;
 mod build;
 mod changelog;
+mod clean;
 mod dist;
 mod doctor;
 mod hooks;
@@ -22,6 +23,7 @@ pub(crate) fn run(command: Command) -> Result<()> {
         Command::CheckWorkspace => workspace::check(&context),
         Command::Hooks => hooks::install(&context),
         Command::PreCommit => hooks::pre_commit(&context),
+        Command::Clean => clean::run(&context),
         Command::Utils => utils::list(&context),
         Command::BuildUtils => utils::build(&context),
         Command::Changelog => changelog::run(&context),

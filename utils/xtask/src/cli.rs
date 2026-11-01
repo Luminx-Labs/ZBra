@@ -27,7 +27,7 @@ pub(crate) enum Command {
     },
     /// Check Python and extension ABI compatibility.
     Abi,
-    /// Check the Rust workspace.
+    /// Check the Rust and Python workspaces.
     CheckWorkspace,
     /// Create CHANGELOG.md from Git history.
     Changelog,
@@ -35,6 +35,8 @@ pub(crate) enum Command {
     Hooks,
     /// Run the checks installed in the pre-commit hook.
     PreCommit,
+    /// Remove Rust and Python build artifacts and caches.
+    Clean,
     /// List configured native utility binaries.
     Utils,
     /// Build configured native utility binaries.
