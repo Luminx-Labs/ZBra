@@ -159,9 +159,7 @@ fn category(commit: &Commit) -> &'static str {
         Some(prefix) if prefix.starts_with("feat") => "Added",
         Some(prefix) if prefix.starts_with("fix") || prefix.starts_with("perf") => "Fixed",
         Some("docs") => "Documentation",
-        Some("refactor" | "style" | "test" | "build" | "ci") => {
-            "Changed"
-        }
+        Some("refactor" | "style" | "test" | "build" | "ci") => "Changed",
         _ => "Other",
     }
 }
