@@ -1,0 +1,117 @@
+/* ZBra docs theme — five palettes.
+ *
+ * mdBook only knows five theme slots (light, rust, coal, navy, ayu), so each slot is
+ * re-skinned here and renamed in the theme picker by zbra-intro.js:
+ *
+ *   light → Ivory       bottle green on warm white
+ *   rust  → Parchment   oxblood on sepia
+ *   coal  → Obsidian    champagne gold on near-black
+ *   navy  → Midnight    silver-sapphire on deep navy
+ *   ayu   → Emerald     pale brass on club-room green
+ */
+/* ---- Ivory ---- */
+.light, html:not(.js) {
+  --bg: #fbfaf5; --fg: #1e2723;
+  --sidebar-bg: #f2f0e6; --sidebar-fg: #3c4640; --sidebar-non-existant: #aab1ab;
+  --sidebar-active: #1d5a43; --sidebar-spacer: #e0dccb;
+  --scrollbar: #cfc9b3; --icons: #7d867f; --icons-hover: #1e2723;
+  --links: #1d5a43; --inline-code-color: #6a5218;
+  --theme-popup-bg: #fffefb; --theme-popup-border: #e3dfce; --theme-hover: #eeebdd;
+  --quote-bg: #f4f2e8; --quote-border: #dcd7c1; --warning-border: #b08a2e;
+  --table-border-color: #e2decd; --table-header-bg: #f1eee1; --table-alternate-bg: #f8f6ee;
+  --searchbar-border-color: #d6d1bb; --searchbar-bg: #fffefb; --searchbar-fg: #1e2723;
+  --searchbar-shadow-color: #e2decd; --searchresults-header-fg: #6b756e;
+  --searchresults-border-color: #e2decd; --searchresult-li-bg: #f1eee1; --search-mark-bg: #ecd68a;
+  --color-scheme: light; color-scheme: light;
+
+  --zb-accent: #1d5a43; --zb-ornament: #a8832d; --zb-code-bg: #f3f1e6;
+  --zb-hairline: #e2decd; --zb-glow: rgba(29,90,67,.10);
+  --zb-syn-kw: #7a2f55; --zb-syn-str: #2f6b4f; --zb-syn-num: #9a6a12;
+  --zb-syn-com: #8d958f; --zb-syn-fn: #2a4f7c; --zb-syn-ty: #6b4a17;
+}
+/* ---- Parchment ---- */
+.rust {
+  --bg: #f0e7d3; --fg: #33291c;
+  --sidebar-bg: #e5d9bd; --sidebar-fg: #4a3c27; --sidebar-non-existant: #a89877;
+  --sidebar-active: #7a2331; --sidebar-spacer: #d6c8a6;
+  --scrollbar: #bfae86; --icons: #8a7a58; --icons-hover: #33291c;
+  --links: #7a2331; --inline-code-color: #5c3b17;
+  --theme-popup-bg: #f7f0df; --theme-popup-border: #d6c8a6; --theme-hover: #e9dcc0;
+  --quote-bg: #eadfc6; --quote-border: #d3c4a0; --warning-border: #a5651f;
+  --table-border-color: #d6c8a6; --table-header-bg: #e6d9bc; --table-alternate-bg: #ece1c9;
+  --searchbar-border-color: #c9b98f; --searchbar-bg: #f7f0df; --searchbar-fg: #33291c;
+  --searchbar-shadow-color: #d9cba8; --searchresults-header-fg: #7a6a4a;
+  --searchresults-border-color: #d6c8a6; --searchresult-li-bg: #e6d9bc; --search-mark-bg: #e5c36a;
+  --color-scheme: light; color-scheme: light;
+
+  --zb-accent: #7a2331; --zb-ornament: #a5782b; --zb-code-bg: #e8dcc0;
+  --zb-hairline: #d6c8a6; --zb-glow: rgba(122,35,49,.10);
+  --zb-syn-kw: #7a2331; --zb-syn-str: #3d5a2a; --zb-syn-num: #9a5f12;
+  --zb-syn-com: #9a8a68; --zb-syn-fn: #2f4f6e; --zb-syn-ty: #6a4515;
+}
+/* ---- Obsidian ---- */
+.coal {
+  --bg: #0e0e10; --fg: #d8d3c6;
+  --sidebar-bg: #121215; --sidebar-fg: #a8a396; --sidebar-non-existant: #4b4a46;
+  --sidebar-active: #dcbc72; --sidebar-spacer: #212126;
+  --scrollbar: #3a3a40; --icons: #77746c; --icons-hover: #efe9da;
+  --links: #dcbc72; --inline-code-color: #e6cf9a;
+  --theme-popup-bg: #17171b; --theme-popup-border: #2a2a30; --theme-hover: #212126;
+  --quote-bg: #141418; --quote-border: #2d2d34; --warning-border: #dcbc72;
+  --table-border-color: #26262c; --table-header-bg: #17171b; --table-alternate-bg: #121216;
+  --searchbar-border-color: #34343b; --searchbar-bg: #16161a; --searchbar-fg: #d8d3c6;
+  --searchbar-shadow-color: #000000; --searchresults-header-fg: #8c887c;
+  --searchresults-border-color: #26262c; --searchresult-li-bg: #17171b; --search-mark-bg: #7a6226;
+  --color-scheme: dark; color-scheme: dark;
+
+  --zb-accent: #dcbc72; --zb-ornament: #b8964a; --zb-code-bg: #141418;
+  --zb-hairline: #26262c; --zb-glow: rgba(220,188,114,.10);
+  --zb-syn-kw: #d6a5b8; --zb-syn-str: #a8c9a0; --zb-syn-num: #e0b872;
+  --zb-syn-com: #6d6a63; --zb-syn-fn: #9bb7d4; --zb-syn-ty: #dcbc72;
+}
+/* ---- Midnight ---- */
+.navy {
+  --bg: #0a1124; --fg: #d3d9ea;
+  --sidebar-bg: #0d1630; --sidebar-fg: #9ba6c4; --sidebar-non-existant: #44507a;
+  --sidebar-active: #a9c4ff; --sidebar-spacer: #18244a;
+  --scrollbar: #2c3a66; --icons: #6f7ca3; --icons-hover: #eaf0ff;
+  --links: #9bbcff; --inline-code-color: #c8d6f8;
+  --theme-popup-bg: #101a38; --theme-popup-border: #22305c; --theme-hover: #172347;
+  --quote-bg: #0e1730; --quote-border: #22305c; --warning-border: #c9b27a;
+  --table-border-color: #1c2a52; --table-header-bg: #101a38; --table-alternate-bg: #0c142c;
+  --searchbar-border-color: #2a3a6c; --searchbar-bg: #101a38; --searchbar-fg: #d3d9ea;
+  --searchbar-shadow-color: #050914; --searchresults-header-fg: #8190b8;
+  --searchresults-border-color: #1c2a52; --searchresult-li-bg: #101a38; --search-mark-bg: #3c5aa6;
+  --color-scheme: dark; color-scheme: dark;
+
+  --zb-accent: #a9c4ff; --zb-ornament: #b9c4de; --zb-code-bg: #0d1630;
+  --zb-hairline: #1c2a52; --zb-glow: rgba(169,196,255,.10);
+  --zb-syn-kw: #b79cf0; --zb-syn-str: #9fd5c0; --zb-syn-num: #f0c987;
+  --zb-syn-com: #5d6a90; --zb-syn-fn: #8fb4ff; --zb-syn-ty: #cdd8f5;
+}
+/* ---- Emerald ---- */
+.ayu {
+  --bg: #081a13; --fg: #dce6d9;
+  --sidebar-bg: #0b2219; --sidebar-fg: #9fb5a5; --sidebar-non-existant: #3f5c4c;
+  --sidebar-active: #d9c98e; --sidebar-spacer: #143428;
+  --scrollbar: #24503d; --icons: #6f9380; --icons-hover: #f2f6ec;
+  --links: #d9c98e; --inline-code-color: #e3d49d;
+  --theme-popup-bg: #0e271d; --theme-popup-border: #1d4636; --theme-hover: #143428;
+  --quote-bg: #0a2018; --quote-border: #1d4636; --warning-border: #d9c98e;
+  --table-border-color: #17382b; --table-header-bg: #0e271d; --table-alternate-bg: #0a1f17;
+  --searchbar-border-color: #25503e; --searchbar-bg: #0e271d; --searchbar-fg: #dce6d9;
+  --searchbar-shadow-color: #030c08; --searchresults-header-fg: #84a091;
+  --searchresults-border-color: #17382b; --searchresult-li-bg: #0e271d; --search-mark-bg: #5b5320;
+  --color-scheme: dark; color-scheme: dark;
+
+  --zb-accent: #d9c98e; --zb-ornament: #b8a766; --zb-code-bg: #0a2018;
+  --zb-hairline: #17382b; --zb-glow: rgba(217,201,142,.10);
+  --zb-syn-kw: #e3b7a0; --zb-syn-str: #a9d8a0; --zb-syn-num: #e3d49d;
+  --zb-syn-com: #5f8070; --zb-syn-fn: #8fd0c0; --zb-syn-ty: #d9c98e;
+}
+/* ---- theme picker swatches ---- */
+.theme-popup #light::before { background: linear-gradient(135deg, #fbfaf5 50%, #1d5a43 50%); }
+.theme-popup #rust::before { background: linear-gradient(135deg, #f0e7d3 50%, #7a2331 50%); }
+.theme-popup #coal::before { background: linear-gradient(135deg, #0e0e10 50%, #dcbc72 50%); }
+.theme-popup #navy::before { background: linear-gradient(135deg, #0a1124 50%, #a9c4ff 50%); }
+.theme-popup #ayu::before { background: linear-gradient(135deg, #081a13 50%, #d9c98e 50%); }

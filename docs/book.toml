@@ -4,5 +4,6 @@ authors = ["Shantanu Giri"]
 language = "en"
 
 [output.html]
-additional-css = ["theme/velox.css"]
-additional-js = ["theme/velox.js"]
+default-theme = "ayu"
+additional-css = ["theme/intro.css","theme/themes.css", "theme/abyss.css"]
+additional-js = ["theme/intro.js", "theme/chess.js"]

@@ -1,0 +1,67 @@
+/* ZBra docs theme — "Abyss": black, cyan and emerald.
+ *
+ * Replaces mdBook's `ayu` slot (shown as "Abyss" in the theme picker) and recolours the
+ * opening sequence. Load it LAST in additional-css so it wins over the other palettes.
+ *
+ *   black    #050709   page
+ *   cyan     #5ce1e6   links, active items, focus
+ *   emerald  #2fbf8f   ornaments, rules, list markers
+ */
+
+.ayu {
+  --bg: #050709;            --fg: #d3e2df;
+  --sidebar-bg: #080c0e;    --sidebar-fg: #94aeaa;   --sidebar-non-existant: #3b504d;
+  --sidebar-active: #5ce1e6; --sidebar-spacer: #12201f;
+  --scrollbar: #1d3a38;     --icons: #5f8581;        --icons-hover: #e8fffc;
+  --links: #5ce1e6;         --inline-code-color: #7cf0c4;
+
+  --theme-popup-bg: #0a1012; --theme-popup-border: #173230; --theme-hover: #0f1b1c;
+  --quote-bg: #08100f;      --quote-border: #173230; --warning-border: #2fbf8f;
+  --table-border-color: #12221f; --table-header-bg: #0a1314; --table-alternate-bg: #070d0e;
+  --searchbar-border-color: #1d3d3a; --searchbar-bg: #0a1012; --searchbar-fg: #d3e2df;
+  --searchbar-shadow-color: #000;
+  --searchresults-header-fg: #6f918d; --searchresults-border-color: #12221f;
+  --searchresult-li-bg: #0a1314;     --search-mark-bg: #0f5f5c;
+  --color-scheme: dark; color-scheme: dark;
+
+  --zb-accent: #5ce1e6;     /* cyan    */
+  --zb-ornament: #2fbf8f;   /* emerald */
+  --zb-code-bg: #0a1113;    --zb-hairline: #12221f;  --zb-glow: rgba(92, 225, 230, .10);
+
+  --zb-syn-kw: #5ce1e6;  --zb-syn-str: #4fd9a0;  --zb-syn-num: #b6f2dd;
+  --zb-syn-com: #4d6865; --zb-syn-fn: #4bb8e8;   --zb-syn-ty: #2fbf8f;
+}
+
+/* a little extra polish only this theme gets */
+.ayu #menu-bar { border-block-end-color: transparent; box-shadow: 0 1px 0 0 #12221f, 0 12px 30px -18px rgba(47, 191, 143, .35); }
+.ayu .content main h1::after { background: linear-gradient(90deg, #5ce1e6, #2fbf8f 55%, transparent); }
+.ayu .content main pre { box-shadow: 0 0 0 1px rgba(47, 191, 143, .06), 0 2rem 5rem -2.4rem rgba(0, 0, 0, .9); }
+.ayu .content main blockquote { border-inline-start-color: #2fbf8f; }
+.ayu .zb-hero h1 { filter: drop-shadow(0 0 4rem rgba(47, 191, 143, .22)); }
+.ayu .zb-board { box-shadow: 0 0 0 .9rem #0a1113, 0 0 0 1px #2fbf8f, 0 0 0 1rem #12221f, 0 0 8rem -1rem rgba(47, 191, 143, .35), 0 3rem 8rem -2rem #000; }
+.ayu .zb-sq.last { box-shadow: inset 0 0 0 999px rgba(92, 225, 230, .32); }
+
+/* picker swatch: black with a cyan-to-emerald corner */
+.theme-popup #ayu::before { background: linear-gradient(135deg, #050709 45%, #5ce1e6 45%, #2fbf8f 100%); }
+
+/* ---- opening sequence, recoloured (the overlay is theme-independent, so it follows this
+        file only when it is loaded; remove this block to keep the gold intro) ---- */
+.zi {
+  --zi-rgb: 92, 225, 230;
+  --zi-ink: #dff4f1;
+  background:
+    radial-gradient(ellipse 80% 70% at 28% 38%, #0a1a1a 0%, rgba(10, 26, 26, 0) 70%),
+    radial-gradient(ellipse 60% 60% at 92% 100%, #062a22 0%, rgba(6, 42, 34, 0) 70%),
+    #030506;
+}
+.zi-wordmark { background-image: linear-gradient(100deg, #0e7a63 0%, #a8fbf4 36%, #2fe0b0 56%, #0e7a63 100%); }
+.zi-boardwrap { background: linear-gradient(145deg, #0b1514, #040707); }
+.zi-lt { background: #c7e8e2; color: #0d4a40; }
+.zi-dk { background: #0d4a40; color: #c7e8e2; }
+.zi-sq.zi-last { box-shadow: inset 0 0 0 999px rgba(92, 225, 230, .38); }
+.zi-w { -webkit-text-stroke-color: #04100e; }
+.zi-b { color: #060a0a; -webkit-text-stroke-color: #7fe8d4; }
+.zi-headline { color: #5ce1e6; }
+.zi-badge span { color: #021211; background: linear-gradient(135deg, #5ce1e6, #2fbf8f); }
+.zi-turn b { color: rgba(47, 191, 143, .8); }
+.zi-progress i { background: linear-gradient(90deg, #2fbf8f, #5ce1e6); }
