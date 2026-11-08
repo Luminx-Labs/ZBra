@@ -1,16 +1,14 @@
 //! `zbra_chess` is the chess library used by the ZBra chess engine.
 //!
 //! It provides a bitboard-backed representation of standard chess positions,
-//! complete FEN round-tripping, legal move generation, and reversible move
-//! application. The public API is organized around [`Board`] for play and
-//! [`Position`] for position data and evaluation snapshots.
+//! legal move generation, and reversible move application. Format parsing
+//! belongs to `zbra_parser`.
 //!
 //! The most commonly used types are:
 //! - [`BitBoard`]: BitBoard and provide methods for its manipulation.
 //! - [`Board`]: Represents Board and provides methods for its manipulation.
 //! - [`EvaluationInfo`]: A struct for obtaining information about give position
 //!   for Evaluating the game for NNUE
-//! - [`FenError`]: Error for FEN.
 //! - [`IllegalMove`]: Represents Illegal Move.
 //! - [`Position`]: Represents a Position of a Chess Game.
 //! - [`Move`]: Struct for a Chess Move.
@@ -28,7 +26,7 @@
 //! let mut board = Board::default();
 //! let move_ = Move::new(Square::new(13).unwrap(), Square::new(29).unwrap());
 //! board.play(move_).unwrap();
-//! assert_eq!(board.to_fen(), "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+//! assert_eq!(board.legal_moves().len(), 20);
 //! ```
 
 mod bitboard;
@@ -39,9 +37,7 @@ mod state;
 mod types;
 
 pub use bitboard::BitBoard;
-pub use board::{
-    Board, EvaluationInfo, FenError, IllegalMove, IllegalMoveReason, Move, Position, Undo,
-};
+pub use board::{Board, EvaluationInfo, IllegalMove, IllegalMoveReason, Move, Position, Undo};
 pub use rules::CastlingRights;
 pub use square::{Square, SquareLabels};
 pub use state::State;

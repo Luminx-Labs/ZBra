@@ -55,22 +55,6 @@ impl State {
         self.full_move_number
     }
 
-    pub(crate) fn from_fen(
-        castling_rights: CastlingRights,
-        en_passant_square: Option<Square>,
-        half_move_counter: u8,
-        full_move_number: u16,
-        stm: usize,
-    ) -> Self {
-        Self {
-            castling_rights,
-            en_passant_square,
-            half_move_counter,
-            full_move_number,
-            stm,
-        }
-    }
-
     pub(crate) fn advance(
         &mut self,
         castling_rights: CastlingRights,

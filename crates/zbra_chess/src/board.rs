@@ -115,11 +115,6 @@ pub struct EvaluationInfo {
     pub full_move_number: u16,
 }
 
-/// An error produced while parsing a Forsyth–Edwards Notation position.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("invalid FEN: {0}")]
-pub struct FenError(String);
-
 impl Position {
     /// Returns the standard chess starting position.
     pub const fn initial() -> Self {
@@ -185,154 +180,10 @@ impl Position {
         }
     }
 
-    /// Parses a complete six-field FEN string.
-    pub fn from_fen(fen: &str) -> Result<Self, FenError> {
-        let fields: Vec<_> = fen.split_whitespace().collect();
-        if fields.len() != 6 {
-            return Err(FenError("FEN must contain six fields".into()));
-        }
-        let mut squares = [EMPTY; 64];
-        for (fen_rank, rank_text) in fields[0].split('/').enumerate() {
-            if fen_rank >= 8 {
-                return Err(FenError("FEN board must contain eight ranks".into()));
-            }
-            let rank = 7 - fen_rank;
-            let mut file = 0;
-            for symbol in rank_text.chars() {
-                if let Some(empty) = symbol.to_digit(10) {
-                    if !(1..=8).contains(&empty) {
-                        return Err(FenError("invalid empty-square count".into()));
-                    }
-                    file += empty as usize;
-                } else if let Some((color, piece)) = fen_piece(symbol) {
-                    if file >= 8 {
-                        return Err(FenError("too many squares in FEN rank".into()));
-                    }
-                    squares[rank * 8 + file] = Some((color.index(), piece.index()));
-                    file += 1;
-                } else {
-                    return Err(FenError(format!("invalid FEN piece: {symbol}")));
-                }
-            }
-            if file != 8 {
-                return Err(FenError("FEN rank does not contain eight squares".into()));
-            }
-        }
-        if squares
-            .iter()
-            .filter(|piece| **piece == Some((0, PieceKind::King.index())))
-            .count()
-            != 1
-            || squares
-                .iter()
-                .filter(|piece| **piece == Some((1, PieceKind::King.index())))
-                .count()
-                != 1
-        {
-            return Err(FenError("FEN must contain one king per side".into()));
-        }
-        let stm = match fields[1] {
-            "w" => 0,
-            "b" => 1,
-            _ => return Err(FenError("invalid FEN side to move".into())),
-        };
-        let castling = parse_castling(fields[2])?;
-        let en_passant_square = parse_fen_square(fields[3])?;
-        let half_move_counter = fields[4]
-            .parse()
-            .map_err(|_| FenError("invalid FEN half-move clock".into()))?;
-        let full_move_number = fields[5]
-            .parse()
-            .map_err(|_| FenError("invalid FEN full-move number".into()))?;
-        if full_move_number == 0 {
-            return Err(FenError("FEN full-move number must be positive".into()));
-        }
-        let state = State::from_fen(
-            castling,
-            en_passant_square,
-            half_move_counter,
-            full_move_number,
-            stm,
-        );
-        Ok(Self::from_squares(&squares, state))
-    }
-
-    /// Serializes this position as a complete six-field FEN string.
-    pub fn to_fen(&self) -> String {
-        let squares = self.squares();
-        let mut board = String::new();
-        for rank in (0..8).rev() {
-            let mut empty = 0;
-            for file in 0..8 {
-                match squares[rank * 8 + file] {
-                    Some((side, piece)) => {
-                        if empty != 0 {
-                            board.push_str(&empty.to_string());
-                            empty = 0;
-                        }
-                        board.push(fen_symbol(side, piece));
-                    }
-                    None => empty += 1,
-                }
-            }
-            if empty != 0 {
-                board.push_str(&empty.to_string());
-            }
-            if rank != 0 {
-                board.push('/');
-            }
-        }
-        let side = if self.state.side_to_move() == 0 {
-            'w'
-        } else {
-            'b'
-        };
-        let rights = self.state.castling_rights().bits();
-        let mut castling = String::new();
-        for (mask, symbol) in [
-            (Castling::WHITE_00, 'K'),
-            (Castling::WHITE_000, 'Q'),
-            (Castling::BLACK_00, 'k'),
-            (Castling::BLACK_000, 'q'),
-        ] {
-            if rights & mask != 0 {
-                castling.push(symbol);
-            }
-        }
-        if castling.is_empty() {
-            castling.push('-');
-        }
-        let en_passant = self
-            .state
-            .en_passant_square()
-            .map_or_else(|| "-".into(), fen_square);
-        format!(
-            "{board} {side} {castling} {en_passant} {} {}",
-            self.state.half_move_counter(),
-            self.state.full_move_number()
-        )
-    }
-
     /// Returns a typed piece bitboard.
     #[inline]
     pub const fn bitboard(&self, color: Color, piece: PieceKind) -> BitBoard {
         self.bb_pieces[color.index()][piece.index()]
-    }
-
-    fn from_squares(squares: &[Option<(usize, usize)>; 64], state: State) -> Self {
-        let mut sides = [0_u64; 2];
-        let mut pieces = [[0_u64; 6]; 2];
-        for (index, piece) in squares.iter().enumerate() {
-            if let Some((side, kind)) = piece {
-                sides[*side] |= 1_u64 << index;
-                pieces[*side][*kind] |= 1_u64 << index;
-            }
-        }
-        Self {
-            bb_sides: [BitBoard(sides[0]), BitBoard(sides[1])],
-            bb_pieces: pieces.map(|side| side.map(BitBoard)),
-            state,
-        }
     }
 
     #[inline]
@@ -387,82 +238,6 @@ impl Default for Position {
     }
 }
 
-fn fen_piece(symbol: char) -> Option<(Color, PieceKind)> {
-    let color = if symbol.is_ascii_uppercase() {
-        Color::White
-    } else {
-        Color::Black
-    };
-    let piece = match symbol.to_ascii_lowercase() {
-        'k' => PieceKind::King,
-        'q' => PieceKind::Queen,
-        'r' => PieceKind::Rook,
-        'b' => PieceKind::Bishop,
-        'n' => PieceKind::Knight,
-        'p' => PieceKind::Pawn,
-        _ => return None,
-    };
-    Some((color, piece))
-}
-
-fn fen_symbol(side: usize, piece: usize) -> char {
-    let symbol = match piece {
-        0 => 'k',
-        1 => 'q',
-        2 => 'r',
-        3 => 'n',
-        4 => 'b',
-        5 => 'p',
-        _ => '?',
-    };
-    if side == 0 {
-        symbol.to_ascii_uppercase()
-    } else {
-        symbol
-    }
-}
-
-fn parse_castling(value: &str) -> Result<crate::rules::CastlingRights, FenError> {
-    if value == "-" {
-        return Ok(crate::rules::CastlingRights::empty());
-    }
-    let mut bits = 0;
-    for symbol in value.chars() {
-        let bit = match symbol {
-            'K' => Castling::WHITE_00,
-            'Q' => Castling::WHITE_000,
-            'k' => Castling::BLACK_00,
-            'q' => Castling::BLACK_000,
-            _ => return Err(FenError("invalid FEN castling rights".into())),
-        };
-        if bits & bit != 0 {
-            return Err(FenError("duplicate FEN castling right".into()));
-        }
-        bits |= bit;
-    }
-    Ok(crate::rules::CastlingRights::from_bits(bits))
-}
-
-fn parse_fen_square(value: &str) -> Result<Option<Square>, FenError> {
-    if value == "-" {
-        return Ok(None);
-    }
-    let bytes = value.as_bytes();
-    if bytes.len() != 2 || !(b'a'..=b'h').contains(&bytes[0]) || !(b'1'..=b'8').contains(&bytes[1])
-    {
-        return Err(FenError("invalid FEN en-passant square".into()));
-    }
-    Ok(Square::from_file_rank(
-        (bytes[0] - b'a') as usize,
-        (bytes[1] - b'1') as usize,
-    ))
-}
-
-fn fen_square(square: Square) -> String {
-    let (file, rank) = square.file_rank();
-    format!("{}{}", (b'a' + file as u8) as char, rank + 1)
-}
-
 /// A standard chess board with legal move generation and game-state tracking.
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Board(Position);
@@ -488,21 +263,6 @@ impl Board {
     #[inline]
     pub const fn evaluation_info(&self) -> EvaluationInfo {
         self.0.evaluation_info()
-    }
-
-    /// Creates a board from a complete six-field FEN string.
-    pub fn from_fen(fen: &str) -> Result<Self, FenError> {
-        Ok(Self(Position::from_fen(fen)?))
-    }
-
-    /// Parses FEN into an [`anyhow::Result`] for application-level callers.
-    pub fn from_fen_anyhow(fen: &str) -> anyhow::Result<Self> {
-        Self::from_fen(fen).map_err(anyhow::Error::new)
-    }
-
-    /// Serializes the current board as a complete FEN string.
-    pub fn to_fen(&self) -> String {
-        self.0.to_fen()
     }
 
     /// Returns all legal moves for the side to move.
@@ -1108,51 +868,15 @@ mod tests {
     }
 
     #[test]
-    fn kiwipete_perft_depth_two_is_two_thousand_thirty_nine() {
-        fn perft(board: &Board, depth: u8) -> u64 {
-            if depth == 0 {
-                return 1;
-            }
-            board
-                .legal_moves()
-                .into_iter()
-                .map(|chess_move| {
-                    let mut next = board.clone();
-                    next.play(chess_move).expect("generated move is legal");
-                    perft(&next, depth - 1)
-                })
-                .sum()
-        }
-        let board =
-            Board::from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
-                .expect("valid Kiwipete FEN");
-        assert_eq!(perft(&board, 2), 2_039);
-    }
-
-    #[test]
-    fn fen_round_trip_preserves_position_state() {
-        let fen = "r3k2r/ppp2ppp/2n1b3/3qp3/3P4/2N1PN2/PPP2PPP/R2QK2R w KQkq - 4 9";
-        let board = Board::from_fen(fen).expect("valid FEN");
-        assert_eq!(board.to_fen(), fen);
-        assert_eq!(
-            board
-                .position()
-                .bitboard(crate::types::Color::White, crate::types::PieceKind::King)
-                .0,
-            1 << 4
-        );
-    }
-
-    #[test]
     fn make_and_unmake_restores_the_exact_position() {
         let mut board = Board::default();
-        let before = board.to_fen();
+        let before = board.clone();
         let chess_move = board.legal_moves()[0];
         let undo = board
             .make_move(chess_move)
             .expect("generated move is legal");
-        assert_ne!(board.to_fen(), before);
+        assert_ne!(board, before);
         board.unmake_move(undo);
-        assert_eq!(board.to_fen(), before);
+        assert_eq!(board, before);
     }
 }
