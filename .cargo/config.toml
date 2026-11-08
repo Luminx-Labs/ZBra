@@ -4,6 +4,6 @@ x = "xtask"
 lint = "cargo clippy --workspace --all-features -- -D warnings"
 
 [env]
-# Keep PyO3 builds on the repository-managed Python environment. `force = false`
-# allows a developer or CI job to override this explicitly.
-PYO3_PYTHON = { value = ".venv/bin/python", relative = true, force = false }
+# Keep every PyO3 build on the repository-managed Python environment. The
+# repository's `.xtask.toml` pins the ABI this interpreter must provide.
+PYO3_PYTHON = { value = ".venv/bin/python", relative = true, force = true }

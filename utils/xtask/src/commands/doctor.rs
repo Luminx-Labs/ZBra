@@ -12,6 +12,13 @@ pub(super) fn run(context: &Context, install: bool) -> Result<()> {
     context.python(&["--version"])?;
     context.run("git", &["--version"])?;
 
+    for command in &context.config().required_commands {
+        context.run(command, &["--version"]).map_err(|error| {
+            anyhow::anyhow!("required command `{command}` is unavailable: {error:#}")
+        })?;
+        crate::success!("required command available: {command}");
+    }
+
     let package_manager = &context.config().python.package_manager;
     if context.command_available(package_manager) {
         crate::success!("Python package manager available: {package_manager}");
@@ -27,6 +34,9 @@ pub(super) fn run(context: &Context, install: bool) -> Result<()> {
             .map_err(|error| anyhow::anyhow!("Python tool `{tool}` is unavailable: {error:#}"))?;
         crate::success!("Python tool available: {tool}");
     }
+
+    crate::info!("checking Python ABI pin");
+    super::abi::run(context)?;
 
     crate::info!("configured Python: {}", context.config().python.version);
     crate::info!("Python executable: {}", context.python_command());

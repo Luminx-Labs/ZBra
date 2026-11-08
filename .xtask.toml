@@ -1,3 +1,12 @@
+required_commands = [
+  "taplo",
+  "cargo-audit",
+  "cargo-deny",
+  "typos",
+  "cargo-nextest",
+  "cargo-llvm-cov",
+]
+
 [project]
 name = "zbra"
 

@@ -6,6 +6,7 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 readme.workspace = true
+license.workspace = true
 publish.workspace = true
 
 
@@ -14,9 +15,5 @@ serde.workspace = true
 clap.workspace = true
 semver.workspace = true
 toml_edit.workspace = true
-xshell.workspace = true
-camino.workspace = true
 cargo_metadata.workspace = true
-tinyjson.workspace = true
 anyhow.workspace = true
-thiserror.workspace = true

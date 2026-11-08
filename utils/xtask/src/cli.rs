@@ -51,6 +51,9 @@ pub(crate) enum Command {
         /// Increment the workspace version according to SemVer 2.0.
         #[arg(long, value_enum, conflicts_with = "set")]
         bump: Option<VersionBump>,
+        /// Mark a bumped version as the first alpha prerelease.
+        #[arg(long, conflicts_with = "set")]
+        pre_release: bool,
     },
     /// Build the engine and supporting tools.
     Build,

@@ -28,7 +28,11 @@ pub(crate) fn run(command: Command) -> Result<()> {
         Command::BuildUtils => utils::build(&context),
         Command::Changelog => changelog::run(&context),
         Command::Dist => dist::run(&context),
-        Command::Version { set, bump } => version::run(&context, set.as_ref(), bump),
+        Command::Version {
+            set,
+            bump,
+            pre_release,
+        } => version::run(&context, set.as_ref(), bump, pre_release),
         Command::Build => build::run(&context),
         Command::Release { release_version } => release::run(&context, release_version.as_ref()),
     }

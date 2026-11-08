@@ -4,10 +4,16 @@ use anyhow::Result;
 pub(super) fn check(context: &Context) -> Result<()> {
     crate::info!("checking Rust formatting");
     context.cargo(&["fmt", "--all", "--", "--check"])?;
+    crate::info!("checking TOML formatting");
+    context.run("taplo", &["fmt", "--check"])?;
+    crate::info!("auditing dependencies");
+    context.cargo(&["audit"])?;
     crate::info!("checking the Rust workspace");
     context.cargo(&["check", "--workspace"])?;
-    crate::info!("running Rust tests");
-    context.cargo(&["test", "--workspace"])?;
+    crate::info!("running Rust tests with nextest");
+    context.cargo(&["nextest", "run", "--workspace"])?;
+    crate::info!("checking Rust coverage instrumentation");
+    context.cargo(&["llvm-cov", "--workspace", "--all-features", "--no-report"])?;
     crate::info!("running Clippy with warnings denied");
     context.cargo(&[
         "clippy",
@@ -18,6 +24,8 @@ pub(super) fn check(context: &Context) -> Result<()> {
         "-D",
         "warnings",
     ])?;
+    crate::info!("checking the dependencies with deny");
+    context.cargo(&["deny", "check", "all"])?;
     check_python(context)?;
     crate::success!("workspace checks passed");
     Ok(())

@@ -21,7 +21,7 @@ pub(super) fn run(context: &Context, requested: Option<&Version>) -> Result<()> 
     super::hooks::pre_commit(context)?;
 
     crate::info!("updating release files for {version}");
-    super::version::run(context, Some(&version), None)?;
+    super::version::run(context, Some(&version), None, false)?;
     super::changelog::run(context)?;
     super::build::run(context)?;
     super::hooks::pre_commit(context)?;

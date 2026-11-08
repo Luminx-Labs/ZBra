@@ -14,6 +14,8 @@ pub struct Config {
     pub model: ModelConfig,
     #[serde(default)]
     pub utils: Vec<UtilityConfig>,
+    #[serde(default)]
+    pub required_commands: Vec<String>,
 }
 
 impl Config {
