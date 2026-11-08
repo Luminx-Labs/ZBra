@@ -9,6 +9,7 @@ rust-version = "1.88"
 edition = "2024"
 authors = ["Shantanu Giri <gshantanu27111@gmail.com>"]
 readme = "README.md"
+license = "unlicensed"
 publish = false
 
 [workspace.lints.rust]
@@ -77,10 +78,10 @@ enum_glob_use = "warn"
 
 [workspace.dependencies]
 # --- Workspace Members
-dev = {path = "crates/zbra_dev"}
-py = {path = "crates/zbra_py"}
-chess = {path = "crates/zbra_chess"}
-parser = {path = "crates/parser"}
+dev = { path = "crates/zbra_dev" }
+py = { path = "crates/zbra_py" }
+chess = { path = "crates/zbra_chess" }
+parser = { path = "crates/parser" }
 
 # --- Logging
 tracing = "0.1"
@@ -139,7 +140,7 @@ debug = false # Dependencies rarely need Debugging
 opt-level = 0 # No optimization of Dependencies
 
 [profile.dev.package.xtask]
-debug = 0 # No Debugging need for xtask
+debug = 0     # No Debugging need for xtask
 opt-level = 1 # Basic Optimization to avoid long compile time for xtask
 
 # A fast development profile for low-end PCs

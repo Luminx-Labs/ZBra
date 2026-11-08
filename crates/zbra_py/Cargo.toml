@@ -6,9 +6,15 @@ rust-version.workspace = true
 edition.workspace = true
 authors.workspace = true
 readme.workspace = true
+license.workspace = true
 publish.workspace = true
 
+[lib]
+name = "zbra"
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
+pyo3.workspace = true
 
 [lints]
 workspace = true
