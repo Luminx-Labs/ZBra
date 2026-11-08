@@ -76,6 +76,29 @@ wildcard_imports = "warn"
 enum_glob_use = "warn"
 
 [workspace.dependencies]
+# --- Workspace Members
+dev = {path = "crates/zbra_dev"}
+py = {path = "crates/zbra_py"}
+chess = {path = "crates/zbra_chess"}
+parser = {path = "crates/parser"}
+
+# --- Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+indicatif = "0.18"
+
+# --- NNUE Trainer
+bullet = { git = "https://github.com/jw1912/bullet", features = ["cuda"] }
+
+# --- Python Bindings
+pyo3 = "0.30"
+
+# --- Parallel Computing
+rayon = "1.12"
+
+# --- Parsing
+nom = "8"
+
 # --- Serialization
 serde = { version = "1", features = ["derive"] }
 
@@ -84,8 +107,10 @@ thiserror = "2"
 anyhow = "1"
 
 # --- Serialization & Deserialization
-tinyjson = "2"
 toml_edit = { version = "0.25.15", features = ["serde"] }
+
+# --- Compression
+zstd = "0.14.3"
 
 # --- Argument Parsing
 clap = { version = "4", default-features = false, features = [
@@ -97,10 +122,8 @@ clap = { version = "4", default-features = false, features = [
 ] }
 
 # --- xtask utilities
-camino = { version = "1", features = ["serde1"] }
 cargo_metadata = "0.23.1"
 semver = "1"
-xshell = "0.2.7"
 
 # == Profiles
 
