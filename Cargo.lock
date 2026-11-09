@@ -414,6 +414,9 @@ dependencies = [
 [[package]]
 name = "zbra_parser"
 version = "0.1.0-alpha.1"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "zbra_py"
