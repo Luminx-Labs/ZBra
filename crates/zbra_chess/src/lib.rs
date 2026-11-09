@@ -1,8 +1,7 @@
 //! `zbra_chess` is the chess library used by the ZBra chess engine.
 //!
 //! It provides a bitboard-backed representation of standard chess positions,
-//! legal move generation, and reversible move application. Format parsing
-//! belongs to `zbra_parser`.
+//! legal move generation, reversible move application, and FEN parsing.
 //!
 //! The most commonly used types are:
 //! - [`BitBoard`]: BitBoard and provide methods for its manipulation.
@@ -37,7 +36,9 @@ mod state;
 mod types;
 
 pub use bitboard::BitBoard;
-pub use board::{Board, EvaluationInfo, IllegalMove, IllegalMoveReason, Move, Position, Undo};
+pub use board::{
+    Board, EvaluationInfo, FenError, IllegalMove, IllegalMoveReason, Move, Position, Undo,
+};
 pub use rules::CastlingRights;
 pub use square::{Square, SquareLabels};
 pub use state::State;

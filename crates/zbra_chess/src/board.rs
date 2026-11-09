@@ -14,6 +14,13 @@ use crate::{
     state::State,
     types::{Color, PieceKind},
 };
+use nom::{
+    Parser,
+    bytes::complete::take_while1,
+    character::complete::{char, multispace0, space1},
+    combinator::all_consuming,
+    multi::separated_list1,
+};
 
 const EMPTY: Option<(usize, usize)> = None;
 
@@ -115,6 +122,11 @@ pub struct EvaluationInfo {
     pub full_move_number: u16,
 }
 
+/// An error produced while parsing a Forsyth–Edwards Notation position.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[error("invalid FEN: {0}")]
+pub struct FenError(String);
+
 impl Position {
     /// Returns the standard chess starting position.
     pub const fn initial() -> Self {
@@ -139,6 +151,150 @@ impl Position {
             bb_pieces: [white, black],
             state: State::new(),
         }
+    }
+
+    fn from_squares(squares: &[Option<(usize, usize)>; 64], state: State) -> Self {
+        let mut sides = [0_u64; 2];
+        let mut pieces = [[0_u64; 6]; 2];
+        for (index, piece) in squares.iter().enumerate() {
+            if let Some((side, kind)) = piece {
+                sides[*side] |= 1_u64 << index;
+                pieces[*side][*kind] |= 1_u64 << index;
+            }
+        }
+        Self {
+            bb_sides: [BitBoard(sides[0]), BitBoard(sides[1])],
+            bb_pieces: pieces.map(|side| side.map(BitBoard)),
+            state,
+        }
+    }
+
+    /// Parses a complete six-field FEN string.
+    fn from_fen(fen: &str) -> Result<Self, FenError> {
+        let fields = parse_fields(fen)?;
+        if fields.len() != 6 {
+            return Err(FenError("FEN must contain six fields".into()));
+        }
+
+        let mut squares = [EMPTY; 64];
+        let ranks = parse_ranks(fields[0])?;
+        if ranks.len() != 8 {
+            return Err(FenError("FEN board must contain eight ranks".into()));
+        }
+        for (fen_rank, rank_text) in ranks.into_iter().enumerate() {
+            let rank = 7 - fen_rank;
+            let mut file = 0;
+            for symbol in rank_text.chars() {
+                if let Some(empty) = symbol.to_digit(10) {
+                    if !(1..=8).contains(&empty) {
+                        return Err(FenError("invalid empty-square count".into()));
+                    }
+                    file += empty as usize;
+                } else if let Some((color, piece)) = fen_piece(symbol) {
+                    if file >= 8 {
+                        return Err(FenError("too many squares in FEN rank".into()));
+                    }
+                    squares[rank * 8 + file] = Some((color.index(), piece.index()));
+                    file += 1;
+                } else {
+                    return Err(FenError(format!("invalid FEN piece: {symbol}")));
+                }
+                if file > 8 {
+                    return Err(FenError("FEN rank does not contain eight squares".into()));
+                }
+            }
+            if file != 8 {
+                return Err(FenError("FEN rank does not contain eight squares".into()));
+            }
+        }
+        if squares
+            .iter()
+            .filter(|piece| **piece == Some((0, 0)))
+            .count()
+            != 1
+            || squares
+                .iter()
+                .filter(|piece| **piece == Some((1, 0)))
+                .count()
+                != 1
+        {
+            return Err(FenError("FEN must contain one king per side".into()));
+        }
+
+        let stm = match fields[1] {
+            "w" => 0,
+            "b" => 1,
+            _ => return Err(FenError("invalid FEN side to move".into())),
+        };
+        let castling = parse_castling(fields[2])?;
+        let en_passant_square = parse_fen_square(fields[3])?;
+        let half_move_counter = fields[4]
+            .parse()
+            .map_err(|_| FenError("invalid FEN half-move clock".into()))?;
+        let full_move_number = fields[5]
+            .parse()
+            .map_err(|_| FenError("invalid FEN full-move number".into()))?;
+        if full_move_number == 0 {
+            return Err(FenError("FEN full-move number must be positive".into()));
+        }
+        let state = State::from_fen(
+            castling,
+            en_passant_square,
+            half_move_counter,
+            full_move_number,
+            stm,
+        );
+        Ok(Self::from_squares(&squares, state))
+    }
+
+    fn to_fen(&self) -> String {
+        let squares = self.squares();
+        let mut placement = String::new();
+        for rank in (0..8).rev() {
+            let mut empty = 0;
+            for file in 0..8 {
+                match squares[rank * 8 + file] {
+                    Some((side, piece)) => {
+                        if empty != 0 {
+                            placement.push_str(&empty.to_string());
+                            empty = 0;
+                        }
+                        placement.push(fen_symbol(side, piece));
+                    }
+                    None => empty += 1,
+                }
+            }
+            if empty != 0 {
+                placement.push_str(&empty.to_string());
+            }
+            if rank != 0 {
+                placement.push('/');
+            }
+        }
+        let rights = self.state.castling_rights().bits();
+        let castling: String = [
+            (Castling::WHITE_00, 'K'),
+            (Castling::WHITE_000, 'Q'),
+            (Castling::BLACK_00, 'k'),
+            (Castling::BLACK_000, 'q'),
+        ]
+        .into_iter()
+        .filter_map(|(mask, symbol)| (rights & mask != 0).then_some(symbol))
+        .collect();
+        format!(
+            "{placement} {} {} {} {} {}",
+            if self.state.side_to_move() == 0 {
+                'w'
+            } else {
+                'b'
+            },
+            if castling.is_empty() { "-" } else { &castling },
+            self.state
+                .en_passant_square()
+                .map_or_else(|| "-".into(), fen_square),
+            self.state.half_move_counter(),
+            self.state.full_move_number()
+        )
     }
 
     /// Returns the bitboard for a side index (`0` = White, `1` = Black).
@@ -238,6 +394,106 @@ impl Default for Position {
     }
 }
 
+fn parse_fields(input: &str) -> Result<Vec<&str>, FenError> {
+    let parsed: nom::IResult<&str, Vec<&str>, nom::error::Error<&str>> =
+        all_consuming(nom::sequence::delimited(
+            multispace0,
+            separated_list1(
+                space1,
+                take_while1(|character: char| !character.is_whitespace()),
+            ),
+            multispace0,
+        ))
+        .parse(input);
+    parsed
+        .map(|(_, fields)| fields)
+        .map_err(|_| FenError("FEN must contain six fields".into()))
+}
+
+fn parse_ranks(input: &str) -> Result<Vec<&str>, FenError> {
+    let parsed: nom::IResult<&str, Vec<&str>, nom::error::Error<&str>> =
+        separated_list1(char('/'), take_while1(|character: char| character != '/')).parse(input);
+    parsed
+        .map(|(_, ranks)| ranks)
+        .map_err(|_| FenError("FEN board must contain eight ranks".into()))
+}
+
+fn fen_piece(symbol: char) -> Option<(Color, PieceKind)> {
+    let color = if symbol.is_ascii_uppercase() {
+        Color::White
+    } else {
+        Color::Black
+    };
+    let piece = match symbol.to_ascii_lowercase() {
+        'k' => PieceKind::King,
+        'q' => PieceKind::Queen,
+        'r' => PieceKind::Rook,
+        'n' => PieceKind::Knight,
+        'b' => PieceKind::Bishop,
+        'p' => PieceKind::Pawn,
+        _ => return None,
+    };
+    Some((color, piece))
+}
+
+fn fen_symbol(side: usize, piece: usize) -> char {
+    let symbol = match piece {
+        0 => 'k',
+        1 => 'q',
+        2 => 'r',
+        3 => 'n',
+        4 => 'b',
+        5 => 'p',
+        _ => '?',
+    };
+    if side == 0 {
+        symbol.to_ascii_uppercase()
+    } else {
+        symbol
+    }
+}
+
+fn parse_castling(value: &str) -> Result<crate::rules::CastlingRights, FenError> {
+    if value == "-" {
+        return Ok(crate::rules::CastlingRights::empty());
+    }
+    let mut bits = 0;
+    for symbol in value.chars() {
+        let bit = match symbol {
+            'K' => Castling::WHITE_00,
+            'Q' => Castling::WHITE_000,
+            'k' => Castling::BLACK_00,
+            'q' => Castling::BLACK_000,
+            _ => return Err(FenError("invalid FEN castling rights".into())),
+        };
+        if bits & bit != 0 {
+            return Err(FenError("duplicate FEN castling right".into()));
+        }
+        bits |= bit;
+    }
+    Ok(crate::rules::CastlingRights::from_bits(bits))
+}
+
+fn parse_fen_square(value: &str) -> Result<Option<Square>, FenError> {
+    if value == "-" {
+        return Ok(None);
+    }
+    let bytes = value.as_bytes();
+    if bytes.len() != 2 || !(b'a'..=b'h').contains(&bytes[0]) || !(b'1'..=b'8').contains(&bytes[1])
+    {
+        return Err(FenError("invalid FEN en-passant square".into()));
+    }
+    Ok(Square::from_file_rank(
+        (bytes[0] - b'a') as usize,
+        (bytes[1] - b'1') as usize,
+    ))
+}
+
+fn fen_square(square: Square) -> String {
+    let (file, rank) = square.file_rank();
+    format!("{}{}", (b'a' + file as u8) as char, rank + 1)
+}
+
 /// A standard chess board with legal move generation and game-state tracking.
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Board(Position);
@@ -263,6 +519,17 @@ impl Board {
     #[inline]
     pub const fn evaluation_info(&self) -> EvaluationInfo {
         self.0.evaluation_info()
+    }
+
+    /// Creates a board from a complete six-field FEN string.
+    pub fn from_fen(fen: &str) -> Result<Self, FenError> {
+        Ok(Self(Position::from_fen(fen)?))
+    }
+
+    /// Serializes the board as a complete six-field FEN string.
+    #[must_use]
+    pub fn to_fen(&self) -> String {
+        self.0.to_fen()
     }
 
     /// Returns all legal moves for the side to move.
@@ -805,6 +1072,20 @@ mod tests {
         board.reset();
         assert_eq!(board.evaluation_info(), initial);
         assert_eq!(board.occupied_count(), 32);
+    }
+
+    #[test]
+    fn parses_and_round_trips_fen() {
+        let fen = "r3k2r/ppp2ppp/2n1b3/3qp3/3P4/2N1PN2/PPP2PPP/R2QK2R w KQkq - 4 9";
+        let board = Board::from_fen(fen).expect("valid FEN");
+        assert_eq!(board.to_fen(), fen);
+        assert_eq!(board.position().state().side_to_move(), 0);
+        assert_eq!(board.position().state().full_move_number(), 9);
+    }
+
+    #[test]
+    fn rejects_fen_with_missing_king() {
+        assert!(Board::from_fen("8/8/8/8/8/8/8/4K3 w - - 0 1").is_err());
     }
 
     #[test]

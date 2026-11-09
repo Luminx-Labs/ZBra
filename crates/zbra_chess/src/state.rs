@@ -23,6 +23,22 @@ impl State {
         }
     }
 
+    pub(crate) const fn from_fen(
+        castling_rights: CastlingRights,
+        en_passant_square: Option<Square>,
+        half_move_counter: u8,
+        full_move_number: u16,
+        stm: usize,
+    ) -> Self {
+        Self {
+            castling_rights,
+            en_passant_square,
+            half_move_counter,
+            full_move_number,
+            stm,
+        }
+    }
+
     /// Restores this state to the beginning of a game.
     pub fn reset(&mut self) {
         *self = Self::new();
