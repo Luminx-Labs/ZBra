@@ -37,7 +37,7 @@ pub struct Game {
 impl Game {
     pub(crate) fn new(
         tags: Vec<Tag>,
-        moves: Vec<Move>,
+        moves: Vec<PlayerMove>,
         comments: Vec<String>,
         variations: Vec<String>,
         result: GameResult,

@@ -7,10 +7,9 @@
 mod error;
 mod parse;
 mod types;
-mod board;
 
 pub use error::ParserError;
-pub use types::{Game, GameResult, PlayerMove, Pgn, Tag, parse_file};
+pub use types::{Game, GameResult, Pgn, PlayerMove, Tag, parse_file};
 
 /// Parses one or more PGN games from UTF-8 text.
 pub fn parse(input: &str) -> Result<Pgn, ParserError> {

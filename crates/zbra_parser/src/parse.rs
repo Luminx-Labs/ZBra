@@ -9,10 +9,10 @@ use nom::{
 
 use crate::{
     ParserError,
-    types::{Game, GameResult, PlayerMove, Pgn, Tag},
+    types::{Game, GameResult, Pgn, PlayerMove, Tag},
 };
 
-type Movetext = (Vec<Move>, Vec<String>, Vec<String>, GameResult);
+type Movetext = (Vec<PlayerMove>, Vec<String>, Vec<String>, GameResult);
 
 pub(crate) fn document(input: &str) -> Result<Pgn, ParserError> {
     match all_consuming(terminated(many1(game), multispace0)).parse(input) {

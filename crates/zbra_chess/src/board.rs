@@ -247,6 +247,7 @@ impl Position {
         Ok(Self::from_squares(&squares, state))
     }
 
+    /// Generates the FEN string according to current position
     pub fn to_fen(&self) -> String {
         let squares = self.squares();
         let mut placement = String::new();
