@@ -87,7 +87,7 @@ checksum = "1c133bc6a41be0d194c306b5506d15e6feeea7b1d6604bd3f8310dfb2ca96486"
 
 [[package]]
 name = "docs_preprocessor"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 
 [[package]]
 name = "equivalent"
@@ -386,7 +386,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -398,7 +398,7 @@ dependencies = [
 
 [[package]]
 name = "zbra_chess"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 dependencies = [
  "nom",
  "thiserror",
@@ -406,14 +406,14 @@ dependencies = [
 
 [[package]]
 name = "zbra_dev"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 dependencies = [
  "pyo3",
 ]
 
 [[package]]
 name = "zbra_parser"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 dependencies = [
  "anyhow",
  "nom",
@@ -423,7 +423,7 @@ dependencies = [
 
 [[package]]
 name = "zbra_py"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 dependencies = [
  "pyo3",
 ]

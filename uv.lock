@@ -318,12 +318,12 @@ wheels = [
 
 [[package]]
 name = "zbra-dev"
-version = "0.1.0a1"
+version = "0.2.0a0"
 source = { editable = "crates/zbra_dev" }
 
 [[package]]
 name = "zbra-nnue"
-version = "0.1.0a1"
+version = "0.2.0a0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
@@ -363,5 +363,5 @@ provides-extras = ["training", "dev"]
 
 [[package]]
 name = "zbra-py"
-version = "0.1.0a1"
+version = "0.2.0a0"
 source = { editable = "crates/zbra_py" }

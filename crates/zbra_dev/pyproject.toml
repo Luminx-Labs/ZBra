@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "zbra-dev"
-version = "0.1.0-alpha.1"
+version = "0.2.0-alpha.0"
 description = "Python development bindings for the ZBra chess engine"
 requires-python = ">=3.12,<3.13"
 
