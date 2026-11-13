@@ -4,6 +4,31 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+### Added
+
+- add the basic parsing capabilities in `zbra_parser` ([46ef75d](https://github.com/Luminx-Labs/ZBra/commit/46ef75df229edaa279d4f77ec880f2cfb503e79d)
+- add [`ParserError`] for `zbra_parser` for proper error handling ([0aa06fa](https://github.com/Luminx-Labs/ZBra/commit/0aa06faae931f83a73e7a4a96c8d203d4b0302de)
+
+### Fixed
+
+- move the FEN strings parsing from `zbra_parser` to `zbra_chess` for efficiency ([abe45a1](https://github.com/Luminx-Labs/ZBra/commit/abe45a1bb386067c7f3bd84c586151b65272f97d)
+- add the `pre-release` flag to `version` subcommand and improve the beheaviour of xtask ([b7f64c6](https://github.com/Luminx-Labs/ZBra/commit/b7f64c69ec8961591e4f7ef1ab1d6274d43d0e03)
+
+### Documentation
+
+- configure mdbook and write the initial docs ([c33af8c](https://github.com/Luminx-Labs/ZBra/commit/c33af8cfdebae84f51667a9f3421c0e435fff25b)
+
+### Other
+
+- bump to v0.2.0-alpha.0 ([ba4f6d7](https://github.com/Luminx-Labs/ZBra/commit/ba4f6d72ab915733adc9d5983e56034dee6bfa23)
+- rust formating ([ed6094a](https://github.com/Luminx-Labs/ZBra/commit/ed6094aed123ea7bebf82478602a030f532f110a)
+- configure `cargo-deny` ([89579f5](https://github.com/Luminx-Labs/ZBra/commit/89579f517311b0fcc938cbdf7c09f67243a0d636)
+- add the Python-Rust co-ordination and update the packages manifests according to it ([ab12332](https://github.com/Luminx-Labs/ZBra/commit/ab1233200bc8c33fabd1d4ce67c7a24bf0e59338)
+- move the parsing code from `zbra_chess` to `zbra_parser` ([bbd7753](https://github.com/Luminx-Labs/ZBra/commit/bbd77539753c3bf986b048aff4a2116f3faad63b)
+- remove unused deps and add deps that will be used ([46ca8a5](https://github.com/Luminx-Labs/ZBra/commit/46ca8a54adf2a0d30e1a2e676eb28eb6a1a8a2d0)
+
+## v0.1.0-alpha.1 - 2026-11-03
+
 ### Fixed
 
 - fix the changelog generation of xtask ([88833a7](https://github.com/Luminx-Labs/ZBra/commit/88833a7d339166a01507b26ad7321d2f3fbd983e)
