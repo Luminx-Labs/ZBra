@@ -170,7 +170,7 @@ impl Position {
     }
 
     /// Parses a complete six-field FEN string.
-    fn from_fen(fen: &str) -> Result<Self, FenError> {
+    pub fn from_fen(fen: &str) -> Result<Self, FenError> {
         let fields = parse_fields(fen)?;
         if fields.len() != 6 {
             return Err(FenError("FEN must contain six fields".into()));
@@ -247,7 +247,7 @@ impl Position {
         Ok(Self::from_squares(&squares, state))
     }
 
-    fn to_fen(&self) -> String {
+    pub fn to_fen(&self) -> String {
         let squares = self.squares();
         let mut placement = String::new();
         for rank in (0..8).rev() {
@@ -380,8 +380,9 @@ impl Position {
         Some(piece)
     }
 
+    /// Adds the piece on Position
     #[inline]
-    fn add_piece_at(&mut self, square: usize, piece: (usize, usize)) {
+    pub fn add_piece_at(&mut self, square: usize, piece: (usize, usize)) {
         let mask = 1_u64 << square;
         self.bb_sides[piece.0].0 |= mask;
         self.bb_pieces[piece.0][piece.1].0 |= mask;
