@@ -78,10 +78,10 @@ enum_glob_use = "warn"
 
 [workspace.dependencies]
 # --- Workspace Members
-dev = { path = "crates/zbra_dev" }
-py = { path = "crates/zbra_py" }
-chess = { path = "crates/zbra_chess" }
-parser = { path = "crates/parser" }
+zbra_dev = { path = "crates/zbra_dev" }
+zbra_py = { path = "crates/zbra_py" }
+zbra_chess = { path = "crates/zbra_chess" }
+zbra_parser = { path = "crates/zbra_parser" }
 
 # --- Logging
 tracing = "0.1"
