@@ -415,7 +415,10 @@ dependencies = [
 name = "zbra_parser"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "anyhow",
+ "nom",
  "thiserror",
+ "zbra_chess",
 ]
 
 [[package]]
