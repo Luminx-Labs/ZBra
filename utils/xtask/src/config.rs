@@ -74,7 +74,7 @@ impl Tool {
             Tool::Taplo => "taplo-cli",
             Tool::Audit => "cargo-audit",
             Tool::Deny => "cargo-deny",
-            Tool::Typos => "typos",
+            Tool::Typos => "typos-cli",
         };
 
         info!("installing `{crate_name}` with cargo-binstall");
