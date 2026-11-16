@@ -346,9 +346,9 @@ impl Position {
     #[inline]
     fn squares(&self) -> [Option<(usize, usize)>; 64] {
         let mut squares = [EMPTY; 64];
-        for side in 0..2 {
-            for piece in 0..6 {
-                let mut bits = self.bb_pieces[side][piece].0;
+        for (side, side_pieces) in self.bb_pieces.iter().enumerate() {
+            for (piece, bitboard) in side_pieces.iter().enumerate() {
+                let mut bits = bitboard.0;
                 while bits != 0 {
                     let index = bits.trailing_zeros() as usize;
                     squares[index] = Some((side, piece));
@@ -362,9 +362,9 @@ impl Position {
     #[inline]
     fn piece_at(&self, square: usize) -> Option<(usize, usize)> {
         let mask = 1_u64 << square;
-        for side in 0..2 {
-            for piece in 0..6 {
-                if self.bb_pieces[side][piece].0 & mask != 0 {
+        for (side, side_pieces) in self.bb_pieces.iter().enumerate() {
+            for (piece, bitboard) in side_pieces.iter().enumerate() {
+                if bitboard.0 & mask != 0 {
                     return Some((side, piece));
                 }
             }
