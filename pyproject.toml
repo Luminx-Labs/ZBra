@@ -25,6 +25,12 @@ training = [
 ]
 dev = ["zbra_py", "numpy>=1.26,<3"]
 
+[dependency-groups]
+dev = [
+  "ruff>=0.8",
+  "pytest>=8,<9",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["nnue"]
 

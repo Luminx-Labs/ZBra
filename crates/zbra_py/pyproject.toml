@@ -11,3 +11,9 @@ requires-python = ">=3.12,<3.13"
 [tool.maturin]
 bindings = "pyo3"
 module-name = "zbra"
+
+[dependency-groups]
+dev = [
+  "ruff>=0.8",
+  "pytest>=8,<9",
+]

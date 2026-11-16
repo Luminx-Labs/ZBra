@@ -12,3 +12,9 @@ license = "MIT"
 [tool.maturin]
 bindings = "pyo3"
 module-name = "zbra_dev"
+
+[dependency-groups]
+dev = [
+  "ruff>=0.8",
+  "pytest>=8,<9",
+]
