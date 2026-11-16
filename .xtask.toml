@@ -2,7 +2,7 @@ required_commands = [
   "taplo",
   "cargo-audit",
   "cargo-deny",
-  "typos",
+  "typos-cli",
   "cargo-nextest",
   "cargo-llvm-cov",
 ]
