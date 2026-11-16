@@ -11,8 +11,6 @@ publish.workspace = true
 
 [dependencies]
 thiserror.workspace = true
-anyhow.workspace = true
-zbra_chess.workspace = true
 nom.workspace = true
 
 [lints]

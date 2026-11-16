@@ -17,3 +17,6 @@ semver.workspace = true
 toml_edit.workspace = true
 cargo_metadata.workspace = true
 anyhow.workspace = true
+
+[lints]
+workspace = true
