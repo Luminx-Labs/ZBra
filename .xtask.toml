@@ -18,8 +18,8 @@ engine_binary = "target/release/zbra"
 hooks_dir = ".githooks"
 
 [python]
-version = "3.12"
-abi = "cp312"
+version = "3.14"
+abi = "cp314"
 implementation = "cpython"
 package_manager = "uv"
 project_dir = "."
