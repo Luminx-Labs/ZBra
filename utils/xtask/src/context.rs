@@ -9,14 +9,14 @@ use std::{
     sync::OnceLock,
 };
 
-pub struct Context {
+pub(crate) struct Context {
     root: PathBuf,
     config: Config,
     metadata: OnceLock<Metadata>,
 }
 
 impl Context {
-    pub fn load() -> Result<Self> {
+    pub(crate) fn load() -> Result<Self> {
         let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let root = manifest_dir
             .ancestors()
@@ -31,15 +31,15 @@ impl Context {
         })
     }
 
-    pub fn config(&self) -> &Config {
+    pub(crate) fn config(&self) -> &Config {
         &self.config
     }
 
-    pub fn root(&self) -> &Path {
+    pub(crate) fn root(&self) -> &Path {
         &self.root
     }
 
-    pub fn metadata(&self) -> Result<&Metadata> {
+    pub(crate) fn metadata(&self) -> Result<&Metadata> {
         if let Some(metadata) = self.metadata.get() {
             return Ok(metadata);
         }
@@ -57,7 +57,7 @@ impl Context {
             .ok_or_else(|| anyhow::anyhow!("Cargo metadata cache was not initialized"))
     }
 
-    pub fn workspace_version(&self) -> Result<Version> {
+    pub(crate) fn workspace_version(&self) -> Result<Version> {
         let packages = self.metadata()?.workspace_packages();
         let first = packages
             .first()
@@ -69,11 +69,11 @@ impl Context {
         Ok(version)
     }
 
-    pub fn path(&self, relative: impl AsRef<Path>) -> PathBuf {
+    pub(crate) fn path(&self, relative: impl AsRef<Path>) -> PathBuf {
         self.root.join(relative)
     }
 
-    pub fn python(&self, args: &[&str]) -> Result<()> {
+    pub(crate) fn python(&self, args: &[&str]) -> Result<()> {
         let candidates = self.python_candidates();
         let mut not_found = Vec::new();
 
@@ -98,7 +98,7 @@ impl Context {
         )
     }
 
-    pub fn python_output(&self, args: &[&str]) -> Result<String> {
+    pub(crate) fn python_output(&self, args: &[&str]) -> Result<String> {
         let candidates = self.python_candidates();
         let mut not_found = Vec::new();
 
@@ -126,11 +126,11 @@ impl Context {
         )
     }
 
-    pub fn cargo(&self, args: &[&str]) -> Result<()> {
+    pub(crate) fn cargo(&self, args: &[&str]) -> Result<()> {
         self.run("cargo", args)
     }
 
-    pub fn run(&self, program: &str, args: &[&str]) -> Result<()> {
+    pub(crate) fn run(&self, program: &str, args: &[&str]) -> Result<()> {
         self.try_run(program, args)
             .with_context(|| format!("failed to start {program}"))
             .and_then(|status| {
@@ -142,7 +142,7 @@ impl Context {
             })
     }
 
-    pub fn output(&self, program: &str, args: &[&str]) -> Result<std::process::Output> {
+    pub(crate) fn output(&self, program: &str, args: &[&str]) -> Result<std::process::Output> {
         Command::new(program)
             .args(args)
             .current_dir(&self.root)
@@ -150,7 +150,7 @@ impl Context {
             .with_context(|| format!("failed to start {program}"))
     }
 
-    pub fn command_available(&self, program: &str) -> bool {
+    pub(crate) fn command_available(&self, program: &str) -> bool {
         Command::new(program)
             .arg("--version")
             .current_dir(&self.root)
@@ -158,14 +158,14 @@ impl Context {
             .is_ok_and(|output| output.status.success())
     }
 
-    pub fn python_command(&self) -> String {
+    pub(crate) fn python_command(&self) -> String {
         self.python_candidates()
             .into_iter()
             .next()
             .unwrap_or_else(|| "python".to_owned())
     }
 
-    pub fn python_tool(&self, tool: &str, args: &[&str]) -> Result<()> {
+    pub(crate) fn python_tool(&self, tool: &str, args: &[&str]) -> Result<()> {
         if self.config.python.package_manager != "uv" {
             anyhow::bail!(
                 "Python tool checks require uv; configured package manager is `{}`",

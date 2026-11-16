@@ -134,7 +134,9 @@ fn update_nnue_version(path: &Path, version: &Version) -> Result<()> {
             if line.trim_start().starts_with("__version__") {
                 matches += 1;
                 let newline = if line.ends_with('\n') { "\n" } else { "" };
-                let indentation = &line[..line.len() - line.trim_start().len()];
+                let indentation = line
+                    .get(..line.len() - line.trim_start().len())
+                    .unwrap_or("");
                 format!("{indentation}__version__ = \"{version}\"{newline}")
             } else {
                 line.to_owned()

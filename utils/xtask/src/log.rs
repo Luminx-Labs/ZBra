@@ -79,6 +79,7 @@ pub(crate) fn emit_stderr(level: Level, message: impl Display) {
 }
 
 #[macro_export]
+/// Logs an informational message to standard output.
 macro_rules! info {
   ($($argument:tt)*) => {
       $crate::log::emit_stdout($crate::log::Level::Info, format_args!($($argument)*))
@@ -86,6 +87,7 @@ macro_rules! info {
 }
 
 #[macro_export]
+/// Logs a successful operation to standard output.
 macro_rules! success {
   ($($argument:tt)*) => {
       $crate::log::emit_stdout($crate::log::Level::Success, format_args!($($argument)*))
@@ -93,6 +95,7 @@ macro_rules! success {
 }
 
 #[macro_export]
+/// Logs a warning message to standard error.
 macro_rules! warn {
   ($($argument:tt)*) => {
       $crate::log::emit_stderr($crate::log::Level::Warn, format_args!($($argument)*))
@@ -100,6 +103,7 @@ macro_rules! warn {
 }
 
 #[macro_export]
+/// Logs an error message to standard error.
 macro_rules! error {
   ($($argument:tt)*) => {
       $crate::log::emit_stderr($crate::log::Level::Error, format_args!($($argument)*))

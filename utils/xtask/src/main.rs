@@ -1,3 +1,4 @@
+//! Entry point for the xtask utility.
 mod cli;
 mod commands;
 mod config;

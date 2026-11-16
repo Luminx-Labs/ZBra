@@ -12,11 +12,15 @@ pub(super) fn run(context: &Context, install: bool) -> Result<()> {
     context.python(&["--version"])?;
     context.run("git", &["--version"])?;
 
-    for command in &context.config().required_commands {
-        context.run(command, &["--version"]).map_err(|error| {
-            anyhow::anyhow!("required command `{command}` is unavailable: {error:#}")
-        })?;
-        crate::success!("required command available: {command}");
+    crate::info!("checking the required tools according to .xtask.toml");
+    let mut missing_tool = false;
+    for tool in &context.config().required_commands {
+        if tool.check().is_err() {
+            missing_tool = true;
+        }
+    }
+    if missing_tool {
+        bail!("one or more required tools are missing; run `cargo xtask doctor --install`");
     }
 
     let package_manager = &context.config().python.package_manager;
@@ -99,8 +103,13 @@ fn install_dependencies(context: &Context) -> Result<()> {
     if !context.command_available(package_manager) {
         match package_manager.as_str() {
             "uv" => {
-                crate::info!("installing uv with Python pip");
-                context.python(&["-m", "pip", "install", "--user", "uv"])?;
+                crate::info!("installing uv");
+                let status = std::process::Command::new("cargo")
+                    .args(["binstall", "uv", "-y"])
+                    .status();
+                if status.is_err() || !status.as_ref().is_ok_and(|s| s.success()) {
+                    context.python(&["-m", "pip", "install", "--user", "uv"])?;
+                }
             }
             "pip" => {
                 crate::info!("Python pip is managed by the Python installation");
@@ -128,6 +137,10 @@ fn install_dependencies(context: &Context) -> Result<()> {
             ),
             _ => crate::warn!("project synchronization is not configured for {package_manager}"),
         }
+    }
+
+    for tool in &context.config().required_commands {
+        tool.install()?;
     }
 
     Ok(())

@@ -116,6 +116,5 @@ fn abi_matches(expected: &str, soabi: &str, extension_suffix: &str) -> bool {
 
     expected
         .strip_prefix("cp")
-        .map(|version| soabi.contains(&format!("cpython-{version}")))
-        .unwrap_or(false)
+        .is_some_and(|version| soabi.contains(&format!("cpython-{version}")))
 }

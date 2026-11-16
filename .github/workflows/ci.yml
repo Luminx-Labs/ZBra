@@ -21,64 +21,34 @@ env:
   RUSTDOCFLAGS: "-D warnings"
 
 jobs:
-  rust:
-    name: Rust (xtask ci)
+  ci:
+    name: CI (xtask)
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@1.99.1
         with:
-          components: rustfmt, clippy
+          components: clippy, rustfmt
 
-      - uses: Swatinem/rust-cache@v2
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
 
-      - name: Run CI
-        run: cargo xtask ci
-
-  python:
-    name: Python (ruff + pytest)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-
-      # The workspace members (zbra_dev, zbra_py) are built with maturin,
-      # so this job needs Rust as well.
-      - uses: dtolnay/rust-toolchain@stable
-
-      - uses: Swatinem/rust-cache@v2
-
-      - uses: astral-sh/setup-uv@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
           enable-cache: true
 
-      - name: Install dependencies
-        run: uv sync --all-extras
+      - name: Show rustc version
+        run: rustc --version
 
-      - name: Ruff lint
-        run: uvx ruff check .
+      - name: Install CI tools and Python dependencies
+        run: cargo xtask doctor --install
 
-      - name: Ruff format
-        run: uvx ruff format --check .
-
-      - name: Tests
-        run: uv run pytest
-
-  msrv:
-    name: MSRV (1.90)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@1.90
-
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Check workspace on MSRV
-        run: cargo check --workspace --all-targets
-        env:
-          RUSTUP_TOOLCHAIN: "1.90"
+      - name: Run xtask CI
+        run: cargo xtask ci
