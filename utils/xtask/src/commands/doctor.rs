@@ -236,8 +236,5 @@ fn print_summary(context: &Context) {
         "data directory: {}",
         context.path(&config.paths.data_dir).display()
     );
-    crate::info!(
-        "model checksum required: {}",
-        config.model.require_checksum
-    );
+    crate::info!("model checksum required: {}", config.model.require_checksum);
 }
