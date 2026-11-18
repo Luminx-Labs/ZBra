@@ -1,0 +1,17 @@
+# Repository-wide ownership
+* @VCode444
+
+# Rust workspace and engine crates
+/crates/ @VCode444 @shantanu329
+/utils/ @VCode444 @shantanu329
+
+# Python NNUE training and bindings
+/nnue/ @VCode444 @shantanu329
+/crates/zbra_py/ @VCode444 @shantanu329
+
+# Documentation and repository configuration
+/docs/ @VCode444 @shantanu329
+/README.md @VCode444
+/.xtask.toml @VCode444 @shantanu329
+/Cargo.toml @VCode444 @shantanu329
+/pyproject.toml @VCode444 @shantanu329
