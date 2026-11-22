@@ -20,7 +20,7 @@ Special Thanks to these project on which helped to make this project:
 - [Rust & its Community](https://rust-lang.org/): The language in which ZBra is written.
 - [`bullet`](https://github.com/jw1912/bullet): The Library on which ZBra's NNUE is written.
 - [Python](https://www.python.org/): The language in which the training pipeline is written.
-- [`mdbook`](https://rust-lang.github.io/mdBook/): This Documetation is written in.
+- [`mdbook`](https://rust-lang.github.io/mdBook/): This Documentation is written in.
 
 ## About this Book
 

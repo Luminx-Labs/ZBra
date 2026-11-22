@@ -1,6 +1,6 @@
 
 include = ["**/*.toml"]
-exclude = ["target/**", "node_modules/**", ".git/**", "dist/**", "build/**", ".venv/**"]
+exclude = ["target/**", "node_modules/**", ".git/**", "dist/**", "build/**", ".venv/**", "CHANGELOG.md"]
 
 # Global formatting options
 [formatting]

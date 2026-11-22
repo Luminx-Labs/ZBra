@@ -1,6 +1,7 @@
 target
 docs/book
 .githooks
+assets/
 
 .venv/
 __pycache__/

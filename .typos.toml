@@ -1,0 +1,46 @@
+[files]
+# Skip generated, vendored and binary content.
+extend-exclude = [
+  "target/**",
+  ".venv/**",
+  ".git/**",
+  ".pytest_cache/**",
+  ".ruff_cache/**",
+  "Cargo.lock",
+  "uv.lock",
+  "assets/**",
+  "CHANGELOG.md",
+  "docs/theme",
+]
+# Do not skip files listed in .gitignore twice; typos already respects it.
+ignore-hidden = false
+
+[default]
+# Ignore long hex or base64-like strings such as hashes and checksums.
+extend-ignore-re = [
+  "[0-9a-fA-F]{32,}",
+  "[A-Za-z0-9+/]{40,}={0,2}",
+  # Chess FEN strings, for example in tests.
+  "[pnbrqkPNBRQK1-8]+(/[pnbrqkPNBRQK1-8]+){7}( [wb] [KQkq-]+ [a-h1-8-]+)?",
+  # Lines can opt out with a trailing `typos:ignore` comment.
+  ".*typos:ignore.*",
+]
+
+# Words that look like typos but are intentional. Format: word = "word".
+# Add chess or project terms here when typos flags them.
+[default.extend-words]
+# Example entries, remove or edit as needed:
+# nnue = "nnue"
+# ply = "ply"
+
+# Identifiers (variable, function and type names) to accept as-is.
+[default.extend-identifiers]
+# Example: some_odd_name = "some_odd_name"
+
+# Per-file-type overrides.
+[type.rust]
+extend-glob = ["*.rs"]
+
+[type.lock]
+extend-glob = ["*.lock"]
+check-file = false
