@@ -74,7 +74,7 @@ jobs:
         run: cargo +nightly fmt --all -- --check -l
 
       - name: Check TOML formatting
-        run: taplo fmt --check --colors never --log-level error
+        run: RUST_LOG=error taplo fmt --check --colors never
 
       - name: Check for typos
         run: typos
