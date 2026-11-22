@@ -92,7 +92,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 bullet = { git = "https://github.com/jw1912/bullet", features = ["cuda"] }
 
 # --- Python Bindings
-pyo3 = "0.30"
+pyo3 = { version = "0.30", features = ["extension-module", "abi3-py314"] }
 
 # --- Parallel Computing
 rayon = "1.12"

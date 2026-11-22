@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "zbra-py"
 version = "0.2.0-alpha.0"
 description = "Python bindings for using the ZBra chess engine"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.14"
 
 [tool.maturin]
 bindings = "pyo3"

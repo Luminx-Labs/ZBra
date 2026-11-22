@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "zbra-dev"
 version = "0.2.0-alpha.0"
 description = "Python development bindings for the ZBra chess engine"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.14"
 license = "MIT"
 
 [tool.maturin]
