@@ -13,7 +13,4 @@ bindings = "pyo3"
 module-name = "zbra"
 
 [dependency-groups]
-dev = [
-  "ruff>=0.8",
-  "pytest>=8,<9",
-]
+dev = ["pytest>=8,<9", "ruff>=0.8"]

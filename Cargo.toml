@@ -78,15 +78,15 @@ enum_glob_use = "warn"
 
 [workspace.dependencies]
 # --- Workspace Members
-zbra_dev = { path = "crates/zbra_dev" }
-zbra_py = { path = "crates/zbra_py" }
 zbra_chess = { path = "crates/zbra_chess" }
+zbra_dev = { path = "crates/zbra_dev" }
 zbra_parser = { path = "crates/zbra_parser" }
+zbra_py = { path = "crates/zbra_py" }
 
 # --- Logging
+indicatif = "0.18"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-indicatif = "0.18"
 
 # --- NNUE Trainer
 bullet = { git = "https://github.com/jw1912/bullet", features = ["cuda"] }
@@ -104,8 +104,8 @@ nom = "8"
 serde = { version = "1", features = ["derive"] }
 
 # --- Error Handling
-thiserror = "2"
 anyhow = "1"
+thiserror = "2"
 
 # --- Serialization & Deserialization
 toml_edit = { version = "0.25.15", features = ["serde"] }

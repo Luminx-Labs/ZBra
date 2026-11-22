@@ -1,3 +1,19 @@
+# =============================================================================
+# CI workflow
+#
+# The Rust version and components come from rust-toolchain.toml (single source
+# of truth), so there is no version to keep in sync in this file.
+#
+# Jobs:
+#   fmt       Fast checks (rustfmt, taplo, typos). Fails in seconds.
+#   lint-test Clippy, tests (nextest) and docs. Runs only if `fmt` passes.
+#   deny      Dependency policy, licenses and advisories (cargo-deny).
+#   coverage  Coverage report. Runs on pushes to main only.
+#   audit     RustSec advisory scan. Runs on a weekly schedule.
+#
+# Tools are installed as prebuilt binaries via taiki-e/install-action, which is
+# much faster than compiling them with cargo install.
+# =============================================================================
 name: CI
 
 on:
@@ -5,11 +21,17 @@ on:
     branches: [main, dev]
   pull_request:
   workflow_dispatch:
+  schedule:
+    # Weekly run (Monday 06:00 UTC) so new advisories are caught
+    # even when there are no code changes.
+    - cron: "0 6 * * 1"
 
+# Cancel superseded runs on the same branch or PR to save runner minutes.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Least-privilege token: the workflow only needs to read the repository.
 permissions:
   contents: read
 
@@ -17,38 +39,164 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: "0"
   RUST_BACKTRACE: "1"
+  # Treat all compiler and rustdoc warnings as errors.
   RUSTFLAGS: "-D warnings"
   RUSTDOCFLAGS: "-D warnings"
 
 jobs:
-  ci:
-    name: CI (xtask)
+  # ---------------------------------------------------------------------------
+  # Formatting and typo checks (cheap, so they run first)
+  # ---------------------------------------------------------------------------
+  fmt:
+    name: Format and typos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Skip on the weekly schedule; only the audit job is needed there.
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # rustfmt.toml uses nightly-only options. rust-toolchain.toml pins the
+      # repo to 1.99.1, so plain `cargo fmt` would run on stable and ignore
+      # them. We install nightly rustfmt separately and call it explicitly
+      # with `cargo +nightly fmt`, which overrides rust-toolchain.toml.
+      - name: Install nightly rustfmt
+        run: rustup toolchain install nightly --profile minimal --component rustfmt
+
+      - name: Install taplo and typos
+        uses: taiki-e/install-action@v2
+        with:
+          tool: taplo-cli,typos-cli
+
+      # -l lists only the files that need formatting instead of printing diffs.
+      - name: Check Rust formatting
+        run: cargo +nightly fmt --all -- --check -l
+
+      - name: Check TOML formatting
+        run: taplo fmt --check --colors never --log-level error
+
+      - name: Check for typos
+        run: typos
+
+  # ---------------------------------------------------------------------------
+  # Clippy, tests and documentation
+  # ---------------------------------------------------------------------------
+  lint-test:
+    name: Lint and test
+    needs: fmt # Don't spend time building if formatting already failed.
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # Reads rust-toolchain.toml (channel, components, profile) and also
+      # sets up dependency caching. The rustflags input is cleared because
+      # RUSTFLAGS is already set globally above.
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rustflags: ""
+
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+
+      - name: Show toolchain versions
+        run: |
+          rustc --version
+          cargo --version
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --all-features --locked
+
+      # nextest does not run doctests, so they are run separately.
+      - name: Run tests
+        run: cargo nextest run --workspace --all-features --locked
+
+      - name: Run doctests
+        run: cargo test --workspace --doc --all-features --locked
+
+      - name: Build documentation
+        run: cargo doc --workspace --no-deps --all-features --locked
+
+  # ---------------------------------------------------------------------------
+  # Dependency policy: licenses, bans, advisories and sources (deny.toml)
+  # ---------------------------------------------------------------------------
+  deny:
+    name: Cargo deny
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+
+      - name: Check dependencies
+        run: cargo deny check
+
+  # ---------------------------------------------------------------------------
+  # Coverage (main branch only, since instrumented builds are slow)
+  # llvm-tools-preview is already listed in rust-toolchain.toml.
+  # ---------------------------------------------------------------------------
+  coverage:
+    name: Coverage
+    needs: lint-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@1.99.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          components: clippy, rustfmt
+          rustflags: ""
 
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
+      - name: Install cargo-llvm-cov and cargo-nextest
+        uses: taiki-e/install-action@v2
         with:
-          python-version: "3.12"
-          enable-cache: true
+          tool: cargo-llvm-cov,cargo-nextest
 
-      - name: Show rustc version
-        run: rustc --version
+      # RUSTFLAGS is cleared here because -D warnings can conflict with the
+      # coverage instrumentation flags.
+      - name: Generate coverage report
+        env:
+          RUSTFLAGS: ""
+        run: cargo llvm-cov nextest --workspace --all-features --locked --lcov --output-path lcov.info
 
-      - name: Install CI tools and Python dependencies
-        run: cargo xtask doctor --install
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: lcov.info
+          retention-days: 14
 
-      - name: Run xtask CI
-        run: cargo xtask ci
+  # ---------------------------------------------------------------------------
+  # RustSec advisory scan (weekly or manual, because new advisories can appear
+  # at any time and should not block unrelated pull requests)
+  # ---------------------------------------------------------------------------
+  audit:
+    name: Cargo audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: Audit dependencies
+        run: cargo audit

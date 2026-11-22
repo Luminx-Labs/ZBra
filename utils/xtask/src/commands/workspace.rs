@@ -3,7 +3,7 @@ use anyhow::Result;
 
 pub(super) fn check(context: &Context) -> Result<()> {
     crate::info!("checking Rust formatting");
-    context.cargo(&["fmt", "--all", "--", "--check"])?;
+    context.cargo(&["fmt", "--all", "--", "--check", "-l"])?;
     crate::info!("running Clippy with warnings denied");
     context.cargo(&[
         "clippy",

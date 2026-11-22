@@ -8,28 +8,14 @@ version = "0.2.0-alpha.0"
 description = "NNUE training for the ZBra chess engine"
 requires-python = ">=3.12,<3.13"
 license = "MIT"
-dependencies = [
-  "zbra-dev",
-  "optuna>=5.0",
-  "numpy>=1.26,<3",
-  "pydantic>=2.14,<3",
-]
+dependencies = ["zbra-dev", "optuna>=5.0", "numpy>=1.26,<3", "pydantic>=2.14,<3"]
 
 [project.optional-dependencies]
-training = [
-  "zbra_dev",
-  "maturin>=1.7,<2",
-  "pytest>=8,<9",
-  "optuna>=5.0",
-  "pydantic>=2.14,<3",
-]
-dev = ["zbra_py", "numpy>=1.26,<3"]
+dev = ["numpy>=1.26,<3", "zbra_py"]
+training = ["maturin>=1.7,<2", "optuna>=5.0", "pydantic>=2.14,<3", "pytest>=8,<9", "zbra_dev"]
 
 [dependency-groups]
-dev = [
-  "ruff>=0.8",
-  "pytest>=8,<9",
-]
+dev = ["pytest>=8,<9", "ruff>=0.8"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["nnue"]
